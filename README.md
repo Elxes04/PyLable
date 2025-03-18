@@ -49,7 +49,7 @@ PyLable is a simple Python program that allows you to create markdown labels usi
 
 1. Run the program:
     ```sh
-    python pylable.py
+    python main.py
     ```
 2. Use the GUI to create and customize your markdown labels.
 3. Save your labels to a file or copy them to your clipboard.
