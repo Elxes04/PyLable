@@ -1,34 +1,121 @@
 import tkinter as tk
-from tkinter import ttk, filedialog, simpledialog, messagebox
+from tkinter import ttk, filedialog, simpledialog, messagebox, Menu
+import json
+import os
 from markdown_handler import load_markdown, save_markdown
+
+TRANSLATION_DIR = "translations"
 
 class MarkdownTableEditor:
     def __init__(self, root):
         self.root = root
-        self.root.title("Markdown Table Editor")
+        self.current_lang = "en"  # Default language
+        self.translations = {}
+        self.available_languages = self.get_available_languages()
+        self.load_translations(self.current_lang)
 
-        # Variabili
+        self.root.title(self.tr("title"))
+
+        # Variables
         self.columns = []
         self.data = []
 
-        # Tabella
+        # Table
         self.tree = ttk.Treeview(root, show="headings")
         self.tree.pack(pady=10, fill=tk.BOTH, expand=True)
 
-        # Pulsanti
+        # Buttons frame
         btn_frame = tk.Frame(root)
         btn_frame.pack(pady=5)
 
-        tk.Button(btn_frame, text="Aggiungi Riga", command=self.add_row).grid(row=0, column=0, padx=5)
-        tk.Button(btn_frame, text="Modifica Riga", command=self.edit_row).grid(row=0, column=1, padx=5)
-        tk.Button(btn_frame, text="Rimuovi Riga", command=self.remove_row).grid(row=0, column=2, padx=5)
-        tk.Button(btn_frame, text="Aggiungi Colonna", command=self.add_column).grid(row=0, column=3, padx=5)
-        tk.Button(btn_frame, text="Modifica Colonna", command=self.edit_column).grid(row=0, column=4, padx=5)
-        tk.Button(btn_frame, text="Rimuovi Colonna", command=self.remove_column).grid(row=0, column=5, padx=5)
-        tk.Button(btn_frame, text="Carica", command=self.load_markdown).grid(row=0, column=6, padx=5)
-        tk.Button(btn_frame, text="Salva", command=self.save_markdown).grid(row=0, column=7, padx=5)
+        self.buttons = {
+            "add_row": tk.Button(btn_frame, text=self.tr("add_row"), command=self.add_row),
+            "edit_row": tk.Button(btn_frame, text=self.tr("edit_row"), command=self.edit_row),
+            "remove_row": tk.Button(btn_frame, text=self.tr("remove_row"), command=self.remove_row),
+            "add_column": tk.Button(btn_frame, text=self.tr("add_column"), command=self.add_column),
+            "edit_column": tk.Button(btn_frame, text=self.tr("edit_column"), command=self.edit_column),
+            "remove_column": tk.Button(btn_frame, text=self.tr("remove_column"), command=self.remove_column),
+            "load": tk.Button(btn_frame, text=self.tr("load"), command=self.load_markdown),
+            "save": tk.Button(btn_frame, text=self.tr("save"), command=self.save_markdown),
+        }
+
+        for i, key in enumerate(self.buttons):
+            self.buttons[key].grid(row=0, column=i, padx=5)
+
+        # Menu bar
+        self.menu_bar = Menu(root)
+        self.root.config(menu=self.menu_bar)
+
+        self.preferences_menu = Menu(self.menu_bar, tearoff=0)
+        self.menu_bar.add_cascade(label=self.tr("preferences"), menu=self.preferences_menu)
+        self.preferences_menu.add_command(label=self.tr("language"), command=self.change_language)
+
+    def get_available_languages(self):
+        """Scan the translations folder and get available languages."""
+        languages = {}
+        if not os.path.exists(TRANSLATION_DIR):
+            return languages
+
+        for filename in os.listdir(TRANSLATION_DIR):
+            if filename.endswith(".json"):
+                lang_code = filename.replace(".json", "")
+                try:
+                    with open(os.path.join(TRANSLATION_DIR, filename), "r", encoding="utf-8") as file:
+                        data = json.load(file)
+                        languages[lang_code] = data.get("language_name", lang_code)
+                except:
+                    continue
+        return languages
+
+    def load_translations(self, lang):
+        """Load translations from JSON files in the translations directory."""
+        filepath = os.path.join(TRANSLATION_DIR, f"{lang}.json")
+        default_filepath = os.path.join(TRANSLATION_DIR, "en.json")
+
+        try:
+            with open(filepath, "r", encoding="utf-8") as file:
+                self.translations = json.load(file)
+        except FileNotFoundError:
+            print(f"Warning: {filepath} not found. Falling back to English.")
+            try:
+                with open(default_filepath, "r", encoding="utf-8") as file:
+                    self.translations = json.load(file)
+            except FileNotFoundError:
+                print("Error: English fallback file not found. Using empty translations.")
+                self.translations = {}
+
+    def tr(self, key):
+        """Return the translated text based on the selected language."""
+        return self.translations.get(key, key)
+
+    def change_language(self):
+        """Show a selection window to choose a language."""
+        lang_window = tk.Toplevel(self.root)
+        lang_window.title(self.tr("language"))
+
+        tk.Label(lang_window, text=self.tr("select_language")).pack(pady=10)
+
+        for lang_code, lang_name in self.available_languages.items():
+            tk.Button(lang_window, text=lang_name, command=lambda lc=lang_code: self.set_language(lc, lang_window)).pack(pady=2)
+
+    def set_language(self, lang_code, window):
+        """Set the selected language and update the UI."""
+        self.current_lang = lang_code
+        self.load_translations(lang_code)
+        self.update_language()
+        window.destroy()
+
+    def update_language(self):
+        """Update all UI elements to reflect the new language."""
+        self.root.title(self.tr("title"))
+        for key in self.buttons:
+            self.buttons[key].config(text=self.tr(key))
+        self.menu_bar.entryconfig(1, label=self.tr("preferences"))
+        self.preferences_menu.entryconfig(1, label=self.tr("language"))
+
 
     def _refresh_table(self):
+        """Refresh table view."""
         self.tree["columns"] = self.columns
         self.tree.delete(*self.tree.get_children())
 
@@ -40,26 +127,26 @@ class MarkdownTableEditor:
             self.tree.insert("", "end", values=row)
 
     def add_row(self):
-        self._open_edit_window("Aggiungi", [""] * len(self.columns))
+        self._open_edit_window(self.tr("add_row"), [""] * len(self.columns))
 
     def edit_row(self):
         selected_item = self.tree.selection()
         if not selected_item:
-            messagebox.showwarning("Attenzione", "Seleziona una riga da modificare")
+            messagebox.showwarning(self.tr("warning"), self.tr("select_row_edit"))
             return
         values = self.tree.item(selected_item, "values")
-        self._open_edit_window("Modifica", list(values), selected_item)
+        self._open_edit_window(self.tr("edit_row"), list(values), selected_item)
 
     def remove_row(self):
         selected_item = self.tree.selection()
         if not selected_item:
-            messagebox.showwarning("Attenzione", "Seleziona una riga da rimuovere")
+            messagebox.showwarning(self.tr("warning"), self.tr("select_row_remove"))
             return
         self.tree.delete(selected_item)
         self.data = [self.tree.item(row, "values") for row in self.tree.get_children()]
 
     def add_column(self):
-        col_name = simpledialog.askstring("Nuova Colonna", "Inserisci il nome della colonna:")
+        col_name = simpledialog.askstring(self.tr("add_column"), self.tr("enter_column_name"))
         if not col_name:
             return
         self.columns.append(col_name)
@@ -69,15 +156,15 @@ class MarkdownTableEditor:
 
     def edit_column(self):
         if not self.columns:
-            messagebox.showwarning("Attenzione", "Nessuna colonna da modificare")
+            messagebox.showwarning(self.tr("warning"), self.tr("no_columns_edit"))
             return
 
-        col_name = simpledialog.askstring("Modifica Colonna", "Nome della colonna da modificare:")
+        col_name = simpledialog.askstring(self.tr("edit_column"), self.tr("enter_column_name"))
         if col_name not in self.columns:
-            messagebox.showerror("Errore", "Colonna non trovata")
+            messagebox.showerror(self.tr("error"), self.tr("column_not_found"))
             return
 
-        new_name = simpledialog.askstring("Nuovo Nome", "Inserisci il nuovo nome della colonna:")
+        new_name = simpledialog.askstring(self.tr("edit_column"), self.tr("enter_new_column_name"))
         if not new_name:
             return
 
@@ -87,12 +174,12 @@ class MarkdownTableEditor:
 
     def remove_column(self):
         if not self.columns:
-            messagebox.showwarning("Attenzione", "Nessuna colonna da rimuovere")
+            messagebox.showwarning(self.tr("warning"), self.tr("no_columns_edit"))
             return
 
-        col_name = simpledialog.askstring("Rimuovi Colonna", "Nome della colonna da rimuovere:")
+        col_name = simpledialog.askstring(self.tr("remove_column"), self.tr("enter_column_name"))
         if col_name not in self.columns:
-            messagebox.showerror("Errore", "Colonna non trovata")
+            messagebox.showerror(self.tr("error"), self.tr("column_not_found"))
             return
 
         index = self.columns.index(col_name)
@@ -112,30 +199,7 @@ class MarkdownTableEditor:
         if not filepath:
             return
         if save_markdown(filepath, self.columns, self.data):
-            messagebox.showinfo("Salvato", "Tabella salvata con successo!")
+            messagebox.showinfo(self.tr("save"), self.tr("table_saved"))
         else:
-            messagebox.showerror("Errore", "Impossibile salvare il file.")
+            messagebox.showerror(self.tr("error"), self.tr("save_failed"))
 
-    def _open_edit_window(self, mode, values, selected_item=None):
-        edit_window = tk.Toplevel(self.root)
-        edit_window.title(f"{mode} riga")
-
-        entries = []
-        for i, col in enumerate(self.columns):
-            tk.Label(edit_window, text=f"{col}:").grid(row=i, column=0)
-            entry = tk.Entry(edit_window)
-            entry.grid(row=i, column=1)
-            entry.insert(0, values[i])
-            entries.append(entry)
-
-        def save():
-            new_values = [entry.get() for entry in entries]
-            if mode == "Aggiungi":
-                self.tree.insert("", "end", values=new_values)
-                self.data.append(new_values)
-            else:
-                self.tree.item(selected_item, values=new_values)
-                self.data = [self.tree.item(row, "values") for row in self.tree.get_children()]
-            edit_window.destroy()
-
-        tk.Button(edit_window, text="Salva", command=save).grid(row=len(self.columns), column=0, columnspan=2)

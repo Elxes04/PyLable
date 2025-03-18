@@ -1,0 +1,26 @@
+{
+  "language_name": "Italiano",
+  "title": "Editor di Tabelle Markdown",
+  "add_row": "Aggiungi Riga",
+  "edit_row": "Modifica Riga",
+  "remove_row": "Rimuovi Riga",
+  "add_column": "Aggiungi Colonna",
+  "edit_column": "Modifica Colonna",
+  "remove_column": "Rimuovi Colonna",
+  "load": "Carica",
+  "save": "Salva",
+  "preferences": "Preferenze",
+  "language": "Lingua",
+  "select_language": "Seleziona una lingua:",
+  "warning": "Attenzione",
+  "error": "Errore",
+  "select_row_edit": "Seleziona una riga da modificare",
+  "select_row_remove": "Seleziona una riga da rimuovere",
+  "no_columns_edit": "Nessuna colonna da modificare",
+  "column_not_found": "Colonna non trovata",
+  "enter_column_name": "Inserisci il nome della colonna:",
+  "enter_new_column_name": "Inserisci il nuovo nome della colonna:",
+  "table_saved": "Tabella salvata con successo!",
+  "save_failed": "Impossibile salvare il file."
+}
+

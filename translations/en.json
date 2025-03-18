@@ -1,0 +1,26 @@
+{
+  "language_name": "English",
+  "title": "Markdown Table Editor",
+  "add_row": "Add Row",
+  "edit_row": "Edit Row",
+  "remove_row": "Remove Row",
+  "add_column": "Add Column",
+  "edit_column": "Edit Column",
+  "remove_column": "Remove Column",
+  "load": "Load",
+  "save": "Save",
+  "preferences": "Preferences",
+  "language": "Language",
+  "select_language": "Select a language:",
+  "warning": "Warning",
+  "error": "Error",
+  "select_row_edit": "Select a row to edit",
+  "select_row_remove": "Select a row to remove",
+  "no_columns_edit": "No columns to edit",
+  "column_not_found": "Column not found",
+  "enter_column_name": "Enter column name:",
+  "enter_new_column_name": "Enter new column name:",
+  "table_saved": "Table saved successfully!",
+  "save_failed": "Failed to save file."
+}
+

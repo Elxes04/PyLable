@@ -1,0 +1,26 @@
+{
+  "language_name": "Deutsch",
+  "title": "PyTable",
+  "add_row": "Zeile hinzufügen",
+  "edit_row": "Zeile bearbeiten",
+  "remove_row": "Zeile entfernen",
+  "add_column": "Spalte hinzufügen",
+  "edit_column": "Spalte bearbeiten",
+  "remove_column": "Spalte entfernen",
+  "load": "Laden",
+  "save": "Speichern",
+  "preferences": "Einstellungen",
+  "language": "Sprache",
+  "select_language": "Wählen Sie eine Sprache:",
+  "warning": "Warnung",
+  "error": "Fehler",
+  "select_row_edit": "Wählen Sie eine Zeile zum Bearbeiten",
+  "select_row_remove": "Wählen Sie eine Zeile zum Entfernen",
+  "no_columns_edit": "Keine Spalten zum Bearbeiten",
+  "column_not_found": "Spalte nicht gefunden",
+  "enter_column_name": "Geben Sie den Spaltennamen ein:",
+  "enter_new_column_name": "Geben Sie den neuen Spaltennamen ein:",
+  "table_saved": "Tabelle erfolgreich gespeichert!",
+  "save_failed": "Fehler beim Speichern der Datei."
+}
+

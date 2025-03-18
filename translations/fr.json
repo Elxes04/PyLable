@@ -1,0 +1,26 @@
+{
+  "language_name": "Français",
+  "title": "PyTable",
+  "add_row": "Ajouter une ligne",
+  "edit_row": "Modifier une ligne",
+  "remove_row": "Supprimer une ligne",
+  "add_column": "Ajouter une colonne",
+  "edit_column": "Modifier une colonne",
+  "remove_column": "Supprimer une colonne",
+  "load": "Charger",
+  "save": "Enregistrer",
+  "preferences": "Préférences",
+  "language": "Langue",
+  "select_language": "Sélectionnez une langue:",
+  "warning": "Avertissement",
+  "error": "Erreur",
+  "select_row_edit": "Sélectionnez une ligne à modifier",
+  "select_row_remove": "Sélectionnez une ligne à supprimer",
+  "no_columns_edit": "Aucune colonne à modifier",
+  "column_not_found": "Colonne introuvable",
+  "enter_column_name": "Entrez le nom de la colonne:",
+  "enter_new_column_name": "Entrez le nouveau nom de la colonne:",
+  "table_saved": "Table enregistrée avec succès!",
+  "save_failed": "Échec de l'enregistrement du fichier."
+}
+
