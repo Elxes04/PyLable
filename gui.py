@@ -129,6 +129,32 @@ class MarkdownTableEditor:
     def add_row(self):
         self._open_edit_window(self.tr("add_row"), [""] * len(self.columns))
 
+    def _open_edit_window(self, mode, values, selected_item=None):
+        """Open a pop-up window to add or edit a row."""
+        edit_window = tk.Toplevel(self.root)
+        edit_window.title(f"{mode}")
+
+        entries = []
+        for i, col in enumerate(self.columns):
+            tk.Label(edit_window, text=f"{col}:").grid(row=i, column=0)
+            entry = tk.Entry(edit_window)
+            entry.grid(row=i, column=1)
+            entry.insert(0, values[i])
+            entries.append(entry)
+
+        def save():
+            new_values = [entry.get() for entry in entries]
+            if mode == self.tr("add_row"):  # If adding a row
+                self.tree.insert("", "end", values=new_values)
+                self.data.append(new_values)
+            else:  # If editing an existing row
+                self.tree.item(selected_item, values=new_values)
+                self.data = [self.tree.item(row, "values") for row in self.tree.get_children()]
+            edit_window.destroy()
+
+        tk.Button(edit_window, text=self.tr("save"), command=save).grid(row=len(self.columns), column=0, columnspan=2)
+
+
     def edit_row(self):
         selected_item = self.tree.selection()
         if not selected_item:
